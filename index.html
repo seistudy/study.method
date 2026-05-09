@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>合格への地図 — 小澤清文の勉強論</title>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@400;700;900&family=Noto+Sans+JP:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,700;1,400&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0b0c0f;
+  --surface: #13151a;
+  --surface2: #1a1d24;
+  --border: rgba(255,255,255,0.07);
+  --text: #e8e4dc;
+  --muted: rgba(232,228,220,0.45);
+  --accent: #e8c96e;
+  --accent2: #6e9ee8;
+  --accent3: #e86e6e;
+  --green: #6ee8a0;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Sans JP', sans-serif;
+  font-weight: 300;
+  line-height: 1.8;
+  overflow-x: hidden;
+}
+
+/* ── PROGRESS BAR ── */
+#progress {
+  position: fixed;
+  top: 0; left: 0;
+  height: 2px;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  z-index: 9999;
+  transition: width 0.1s linear;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: 0 40px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(11,12,15,0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-logo {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--accent);
+  letter-spacing: 0.15em;
+}
+
+.nav-links {
+  display: flex;
+  gap: 32px;
+  list-style: none;
+}
+
+.nav-links a {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  transition: color 0.2s;
+}
+
+.nav-links a:hover { color: var(--text); }
+
+/* ── COVER ── */
+.cover {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 80px 40px 60px;
+  position: relative;
+  overflow: hidden;
+}
+
+.cover-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 50% at 20% 50%, rgba(110,158,232,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 60% at 80% 30%, rgba(232,201,110,0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 40% at 50% 80%, rgba(110,232,160,0.05) 0%, transparent 60%);
+}
+
+.cover-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black, transparent);
+}
+
+.cover-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.25em;
+  color: var(--accent);
+  border: 1px solid rgba(232,201,110,0.3);
+  padding: 6px 20px;
+  display: inline-block;
+  margin-bottom: 48px;
+  position: relative;
+  opacity: 0;
+  animation: riseIn 0.9s ease forwards 0.2s;
+}
+
+.cover-title {
+  font-family: 'Zen Old Mincho', serif;
+  font-size: clamp(42px, 8vw, 100px);
+  font-weight: 900;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  position: relative;
+  opacity: 0;
+  animation: riseIn 1s ease forwards 0.4s;
+}
+
+.cover-title .line2 {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-weight: 400;
+  color: var(--accent);
+  font-size: 0.7em;
+  display: block;
+  margin-top: 8px;
+}
+
+.cover-author {
+  margin-top: 48px;
+  font-size: 14px;
+  color: var(--muted);
+  letter-spacing: 0.2em;
+  position: relative;
+  opacity: 0;
+  animation: riseIn 1s ease forwards 0.7s;
+}
+
+.cover-author strong {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.cover-scroll {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  opacity: 0;
+  animation: riseIn 1s ease forwards 1.2s;
+}
+
+.cover-scroll span {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: var(--muted);
+}
+
+.scroll-dot {
+  width: 1px;
+  height: 40px;
+  background: linear-gradient(to bottom, var(--muted), transparent);
+  animation: scrollPulse 2s ease infinite;
+}
+
+/* ── CHAPTER LAYOUT ── */
+.chapter {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 100px 40px;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.chapter.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.chapter-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--accent);
+  letter-spacing: 0.3em;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.chapter-num::after {
+  content: '';
+  flex: 1;
+  max-width: 80px;
+  height: 1px;
+  background: rgba(232,201,110,0.3);
+}
+
+.chapter-title {
+  font-family: 'Zen Old Mincho', serif;
+  font-size: clamp(26px, 4vw, 44px);
+  font-weight: 700;
+  line-height: 1.3;
+  margin-bottom: 48px;
+  letter-spacing: -0.01em;
+}
+
+.chapter-title em {
+  font-style: normal;
+  color: var(--accent);
+}
+
+/* ── BODY TEXT ── */
+.body-text {
+  font-size: 16px;
+  line-height: 2.1;
+  color: rgba(232,228,220,0.85);
+  margin-bottom: 32px;
+}
+
+.body-text strong {
+  color: var(--text);
+  font-weight: 700;
+  border-bottom: 1px solid rgba(232,201,110,0.4);
+}
+
+.lead {
+  font-family: 'Zen Old Mincho', serif;
+  font-size: clamp(18px, 2.5vw, 24px);
+  line-height: 1.9;
+  color: var(--text);
+  margin-bottom: 48px;
+  padding-left: 24px;
+  border-left: 3px solid var(--accent);
+}
+
+/* ── CALLOUT ── */
+.callout {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  padding: 32px 36px;
+  margin: 40px 0;
+  position: relative;
+}
+
+.callout-icon {
+  position: absolute;
+  top: -14px;
+  left: 24px;
+  background: var(--accent);
+  color: var(--bg);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  padding: 4px 12px;
+}
+
+.callout-body {
+  font-size: 16px;
+  line-height: 2;
+  color: var(--text);
+}
+
+.callout.blue { border-left-color: var(--accent2); }
+.callout.blue .callout-icon { background: var(--accent2); }
+
+.callout.red { border-left-color: var(--accent3); }
+.callout.red .callout-icon { background: var(--accent3); }
+
+.callout.green { border-left-color: var(--green); }
+.callout.green .callout-icon { background: var(--green); }
+
+/* ── POINT CARD ── */
+.point-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  margin: 40px 0;
+  background: var(--border);
+}
+
+.point-card {
+  background: var(--surface);
+  padding: 32px 24px;
+  text-align: center;
+}
+
+.point-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 48px;
+  color: var(--accent);
+  line-height: 1;
+  margin-bottom: 16px;
+  font-style: italic;
+}
+
+.point-label {
+  font-family: 'Zen Old Mincho', serif;
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.point-desc {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.8;
+}
+
+/* ── SUBJECT BLOCK ── */
+.subject-header {
+  display: flex;
+  align-items: baseline;
+  gap: 20px;
+  margin-bottom: 32px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.subject-name {
+  font-family: 'Zen Old Mincho', serif;
+  font-size: 36px;
+  font-weight: 900;
+}
+
+.subject-en {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: 0.2em;
+}
+
+.subject-tag {
+  margin-left: auto;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  padding: 4px 12px;
+  border: 1px solid;
+  letter-spacing: 0.1em;
+}
+
+.tag-math { color: var(--accent); border-color: rgba(232,201,110,0.3); }
+.tag-phys { color: var(--accent2); border-color: rgba(110,158,232,0.3); }
+.tag-chem { color: var(--green); border-color: rgba(110,232,160,0.3); }
+.tag-eng  { color: var(--accent3); border-color: rgba(232,110,110,0.3); }
+
+/* ── STEP LIST ── */
+.steps {
+  list-style: none;
+  margin: 32px 0;
+  counter-reset: step;
+}
+
+.steps li {
+  display: flex;
+  gap: 24px;
+  padding: 24px 0;
+  border-bottom: 1px solid var(--border);
+  counter-increment: step;
+  opacity: 0;
+  transform: translateX(-16px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.steps li.visible { opacity: 1; transform: translateX(0); }
+
+.steps li::before {
+  content: counter(step, decimal-leading-zero);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 24px;
+  color: var(--accent);
+  flex-shrink: 0;
+  line-height: 1.4;
+  opacity: 0.7;
+}
+
+.step-content { flex: 1; }
+
+.step-title {
+  font-family: 'Zen Old Mincho', serif;
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.step-desc {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.9;
+}
+
+/* ── DIVIDER ── */
+.divider {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 0 40px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.div-line { flex: 1; height: 1px; background: var(--border); }
+.div-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0.5;
+}
+
+/* ── BOOK LIST ── */
+.book-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 32px;
+  margin: 24px 0;
+}
+
+.book-subject-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: var(--muted);
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.book-group {
+  margin-bottom: 20px;
+}
+
+.book-level {
+  font-size: 11px;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--accent);
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+}
+
+.book-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.book-chip {
+  font-size: 13px;
+  padding: 6px 14px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  color: var(--text);
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.book-chip:hover {
+  border-color: rgba(232,201,110,0.3);
+  background: rgba(232,201,110,0.05);
+}
+
+/* ── QUOTE ── */
+.big-quote {
+  padding: 60px 40px;
+  text-align: center;
+  background: var(--surface2);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  margin: 60px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.big-quote::before {
+  content: '"';
+  font-family: 'Playfair Display', serif;
+  font-size: 300px;
+  color: rgba(232,201,110,0.04);
+  position: absolute;
+  top: -60px;
+  left: 20px;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.big-quote-text {
+  font-family: 'Zen Old Mincho', serif;
+  font-size: clamp(20px, 3vw, 32px);
+  font-weight: 700;
+  line-height: 1.6;
+  color: var(--text);
+  position: relative;
+  max-width: 600px;
+  margin: 0 auto 20px;
+}
+
+.big-quote-text em {
+  font-style: normal;
+  color: var(--accent);
+}
+
+.big-quote-source {
+  font-size: 13px;
+  color: var(--muted);
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.1em;
+}
+
+/* ── ENDING ── */
+.ending {
+  text-align: center;
+  padding: 120px 40px;
+  position: relative;
+  overflow: hidden;
+}
+
+.ending-bg {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 60% 60% at 50% 50%, rgba(232,201,110,0.06), transparent);
+}
+
+.ending-title {
+  font-family: 'Zen Old Mincho', serif;
+  font-size: clamp(32px, 5vw, 64px);
+  font-weight: 900;
+  line-height: 1.3;
+  position: relative;
+  margin-bottom: 32px;
+}
+
+.ending-sub {
+  font-size: 16px;
+  color: var(--muted);
+  line-height: 2;
+  max-width: 500px;
+  margin: 0 auto 48px;
+  position: relative;
+}
+
+.ending-sig {
+  font-family: 'Zen Old Mincho', serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--accent);
+  position: relative;
+}
+
+.ending-sig small {
+  display: block;
+  font-size: 13px;
+  color: var(--muted);
+  font-family: 'Noto Sans JP', sans-serif;
+  font-weight: 300;
+  margin-top: 8px;
+  letter-spacing: 0.1em;
+}
+
+/* ── FOOTER ── */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 40px;
+  text-align: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+}
+
+/* ── ANIMATIONS ── */
+@keyframes riseIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scrollPulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.8; }
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 680px) {
+  nav { padding: 0 20px; }
+  .nav-links { display: none; }
+  .chapter { padding: 70px 24px; }
+  .point-cards { grid-template-columns: 1fr; }
+  .cover { padding: 80px 24px 60px; }
+}
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<nav>
+  <div class="nav-logo">STUDY — OZAWA 2024</div>
+  <ul class="nav-links">
+    <li><a href="#philosophy">哲学</a></li>
+    <li><a href="#math">数学</a></li>
+    <li><a href="#science">理科</a></li>
+    <li><a href="#english">英語</a></li>
+    <li><a href="#books">参考書</a></li>
+  </ul>
+</nav>
+
+<!-- ══ COVER ══ -->
+<section class="cover">
+  <div class="cover-bg"></div>
+  <div class="cover-grid"></div>
+  <div class="cover-tag">MEDICAL STUDY GUIDE — 小澤清文</div>
+  <h1 class="cover-title">
+    合格への地図
+    <span class="line2">The Map to Your Goal</span>
+  </h1>
+  <p class="cover-author">
+    <strong>小澤 清文</strong> — 東京科学大学 医学部医学科 1年<br>
+    偏差値40から、医学部合格へ。
+  </p>
+  <div class="cover-scroll">
+    <div class="scroll-dot"></div>
+    <span>SCROLL</span>
+  </div>
+</section>
+
+<!-- ══ CHAPTER 0: OPENING ══ -->
+<section class="chapter" id="philosophy">
+  <div class="chapter-num">CHAPTER 00 — はじめに</div>
+  <h2 class="chapter-title">才能じゃない。<br><em>設計</em>だ。</h2>
+
+  <p class="lead">
+    僕はもともと、勉強ができなかった。<br>
+    偏差値40。「医学部なんて無理だろ」と言われ続けた。
+  </p>
+
+  <p class="body-text">
+    それでも、東京科学大学医学部に合格した。<br>
+    秘密は才能でも、努力量でもない。<strong>勉強の「設計」</strong>を変えたことだ。
+  </p>
+
+  <p class="body-text">
+    この文章に書いてあることは、特別な話じゃない。でも、ほとんどの受験生がやっていない。だからこそ、これを読んで実践した人間だけが、本番で「安定して」点を取れるようになる。
+  </p>
+
+  <div class="callout">
+    <div class="callout-icon">CORE IDEA</div>
+    <div class="callout-body">
+      勉強は継続してすること。<br>
+      そして、<strong>模試・定期テストのたびに「課題意識」を持ち、それを徹底的に潰す</strong>こと。<br>
+      これが最も成績を伸ばすコツだ。
+    </div>
+  </div>
+</section>
+
+<div class="divider"><div class="div-line"></div><div class="div-dot"></div><div class="div-line"></div></div>
+
+<!-- ══ CHAPTER 1: PHILOSOPHY ══ -->
+<section class="chapter">
+  <div class="chapter-num">CHAPTER 01 — 勉強哲学</div>
+  <h2 class="chapter-title">「課題意識」が、<br>すべての<em>起点</em>だ。</h2>
+
+  <p class="body-text">
+    成績が伸びない人を見ていると、共通点がある。「なんとなく」勉強しているのだ。参考書を開いて、問題を解いて、答え合わせして——それで終わり。でも、そこに<strong>「何のためにこれをやっているか」</strong>という意識がない。
+  </p>
+
+  <p class="body-text">
+    例えば、こういうことだ。高3の期末テストで数学が安定しなかった。そのとき僕は「処理能力が足りない」という課題意識を持った。だから基礎の参考書に戻って、簡単な問題を確実に解ききる練習に切り替えた。京大模試で英作文が崩れた。そのとき「基本例文が頭に入っていない」と気づいて、例文の暗記に集中した。
+  </p>
+
+  <div class="callout blue">
+    <div class="callout-icon">KEY POINT</div>
+    <div class="callout-body">
+      課題意識を持つことと同じくらい重要なのが、<strong>「どの参考書に、どの課題意識をぶつけるか」</strong>を考えること。参考書は目的に合わせて選ぶ道具だ。
+    </div>
+  </div>
+
+  <ul class="steps">
+    <li>
+      <div class="step-content">
+        <div class="step-title">模試・テストで課題を特定する</div>
+        <div class="step-desc">点数や順位より「どこが取れなかったか」に注目する。漠然とした反省ではなく、「○○が弱い」と言語化できるまで分析する。</div>
+      </div>
+    </li>
+    <li>
+      <div class="step-content">
+        <div class="step-title">課題に対して最適な参考書・方法を選ぶ</div>
+        <div class="step-desc">「処理速度が足りない」なら基礎問題の反復。「思考力が足りない」なら発展問題で言語化練習。課題と手段を一致させる。</div>
+      </div>
+    </li>
+    <li>
+      <div class="step-content">
+        <div class="step-title">その課題を徹底的に潰しきる</div>
+        <div class="step-desc">中途半端にしない。一つの課題を本当に潰したと感じるまで、集中してやり続ける。</div>
+      </div>
+    </li>
+  </ul>
+</section>
+
+<div class="divider"><div class="div-line"></div><div class="div-dot"></div><div class="div-line"></div></div>
+
+<!-- ══ CHAPTER 2: PLAN ══ -->
+<section class="chapter">
+  <div class="chapter-num">CHAPTER 02 — 計画の作り方</div>
+  <h2 class="chapter-title">逆算して、<br>月単位で<em>設計</em>する。</h2>
+
+  <p class="body-text">
+    計画なき勉強は、地図なき旅だ。どこかには行けるかもしれないが、行きたい場所には着けない。
+  </p>
+
+  <p class="body-text">
+    まず、本番（共通テスト・二次）で取るべき点数を決める。次に、その点数に必要な参考書・レベルを逆算する。そして、それを月割りのタスクに落とし込む。これだけだ。
+  </p>
+
+  <p class="body-text">
+    ただし、計画は変えていい。というか、<strong>課題が見つかったら積極的に変えるべきだ</strong>。計画は守るためにあるのではなく、ゴールに向かうための「現在地確認ツール」だ。
+  </p>
+
+  <div class="point-cards">
+    <div class="point-card">
+      <div class="point-num">①</div>
+      <div class="point-label">目標点数を決める</div>
+      <div class="point-desc">本番で何点取るか。科目ごとに具体的に。</div>
+    </div>
+    <div class="point-card">
+      <div class="point-num">②</div>
+      <div class="point-label">必要な参考書を逆算</div>
+      <div class="point-desc">その点数に必要なレベル・参考書リストを作る。</div>
+    </div>
+    <div class="point-card">
+      <div class="point-num">③</div>
+      <div class="point-label">月割りタスクに落とす</div>
+      <div class="point-desc">いつ何を終わらせるか。月単位でスケジュールを組む。</div>
+    </div>
+  </div>
+
+  <div class="callout red">
+    <div class="callout-icon">CAUTION</div>
+    <div class="callout-body">
+      自己管理は絶対に手を抜かないこと。一日中スマホ、は論外。時間は有限だ。自分に嘘をつかない。それだけで、周りと大きく差がつく。
+    </div>
+  </div>
+</section>
+
+<!-- ══ BIG QUOTE ══ -->
+<div class="big-quote">
+  <div class="big-quote-text">
+    課題意識があれば、<em>どんな参考書も武器になる。</em><br>
+    課題意識がなければ、どんな名著も時間の無駄だ。
+  </div>
+  <div class="big-quote-source">— 小澤清文</div>
+</div>
+
+<!-- ══ CHAPTER 3: MATH ══ -->
+<section class="chapter" id="math">
+  <div class="chapter-num">CHAPTER 03 — 数学</div>
+  <div class="subject-header">
+    <span class="subject-name">数学</span>
+    <span class="subject-en">MATHEMATICS</span>
+    <span class="subject-tag tag-math">CORE SUBJECT</span>
+  </div>
+
+  <p class="lead">
+    数学で安定して点が取れない人は、「なんとなく」解いている。<br>思考を言語化する習慣が、すべてを変える。
+  </p>
+
+  <p class="body-text">
+    まず<strong>チャートで基礎解法を完全に覚えてしまう</strong>こと。これが土台だ。「なんとなく解けた」ではなく、「この解法はこういうときに使う」と言えるレベルまで。
+  </p>
+
+  <p class="body-text">
+    次のステップは、発展問題での「思考の言語化」だ。問題を見て何を考え、なぜその方針を選んだのか——ノートに書き出す。これが癖になれば、もうやらなくていい。でも、この習慣を経験していない人間は、本番で「頭が真っ白」になる。
+  </p>
+
+  <div class="callout">
+    <div class="callout-icon">定石の意識</div>
+    <div class="callout-body">
+      例えば「恒等式」の問題なら：<br>
+      1. 係数をまとめて係数比較<br>
+      2. 微分しても恒等式は恒等式<br><br>
+      一つのテーマに対して、<strong>「どの作業（定石）を使うか」を意識する</strong>。これを全テーマで積み上げると、安定した得点力になる。
+    </div>
+  </div>
+
+  <div class="point-cards">
+    <div class="point-card">
+      <div class="point-num">I</div>
+      <div class="point-label">基礎解法の暗記</div>
+      <div class="point-desc">チャートを何周も。解けたらクリア。詰まったらすぐ答えを見て理解する。</div>
+    </div>
+    <div class="point-card">
+      <div class="point-num">II</div>
+      <div class="point-label">思考の言語化</div>
+      <div class="point-desc">なぜその方針か、ノートに書く。漫然とした解き方から抜け出す。</div>
+    </div>
+    <div class="point-card">
+      <div class="point-num">III</div>
+      <div class="point-label">定石の意識</div>
+      <div class="point-desc">テーマごとに使う「型」を意識する。これが安定得点の核心。</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><div class="div-line"></div><div class="div-dot"></div><div class="div-line"></div></div>
+
+<!-- ══ CHAPTER 4: SCIENCE ══ -->
+<section class="chapter" id="science">
+  <div class="chapter-num">CHAPTER 04 — 物理・化学</div>
+  <div class="subject-header">
+    <span class="subject-name">理科</span>
+    <span class="subject-en">SCIENCE</span>
+    <span class="subject-tag tag-phys">SYSTEMATIC</span>
+  </div>
+
+  <p class="lead">
+    物理は「数学のあまり考えないバージョン」。<br>化学は「定石が圧倒的に支配する科目」。
+  </p>
+
+  <p class="body-text">
+    <strong>物理</strong>：良問の風で基礎を終わらせたら、名門の森へ。名門の森の問題は、数学でいうチャートのコンパス3レベル。「発展」と構えず、基礎解法として覚えてしまっていい。自分の中で「基礎解法と思えない問題」だけ、思考の言語化と定石を適用する。
+  </p>
+
+  <p class="body-text">
+    <strong>化学</strong>：定石が圧倒的に支配している。すべてのパターンに対して「自分なりの定石」を考えてメモしていく。これをやると、苦手意識は消える。解説は丁寧に読むこと。解けた問題でも、必ず学びがある。
+  </p>
+
+  <div class="callout green">
+    <div class="callout-icon">効率的な周回法</div>
+    <div class="callout-body">
+      問題を見る → 解いてみる → 詰まったらすぐ答えを見て理解 → を繰り返す。<br>
+      解けたらクリア。できなかった問題にチェックをつけ、そのチェックを減らしていく。<br><br>
+      <strong>注意：これは基礎解法定着のための方法。思考力はつかない。課題意識を明確に。</strong>
+    </div>
+  </div>
+
+  <div class="callout blue">
+    <div class="callout-icon">集中攻略法</div>
+    <div class="callout-body">
+      理系科目は基礎が固まるまで、<strong>2週間ほど1科目に集中する期間</strong>を作るのが効果的。短期集中で固めた方が、少しずつやって忘れるより確実に速い。英語だけは毎日触れること。
+    </div>
+  </div>
+
+  <p class="body-text">
+    参考書は<strong>一冊単位で回す</strong>こと。少しずつ複数冊を進めるより、一冊を何周もする方が定着する。そして何より、最初に参考書の「全体像」を把握してしまうこと——わからなくてもいいから、まず一周する。地図を持ってから旅をする。
+  </p>
+</section>
+
+<div class="divider"><div class="div-line"></div><div class="div-dot"></div><div class="div-line"></div></div>
+
+<!-- ══ CHAPTER 5: ENGLISH ══ -->
+<section class="chapter" id="english">
+  <div class="chapter-num">CHAPTER 05 — 英語</div>
+  <div class="subject-header">
+    <span class="subject-name">英語</span>
+    <span class="subject-en">ENGLISH</span>
+    <span class="subject-tag tag-eng">EVERY DAY</span>
+  </div>
+
+  <p class="lead">
+    英語は「毎日触れる」がすべての前提。<br>
+    一日でも空けたら、それまでの積み上げが崩れていく。
+  </p>
+
+  <p class="body-text">
+    短い時間でもいい。単語だけでなく、<strong>必ず文章に一度は触れること</strong>。英語は筋肉と同じで、毎日使わないと落ちる。
+  </p>
+
+  <ul class="steps">
+    <li>
+      <div class="step-content">
+        <div class="step-title">単語・文法を固める</div>
+        <div class="step-desc">単語は品詞だけでなく、自動詞・他動詞の区別まで覚える。これが英文解釈の精度を決める。手持ちの単語帳が不安なら、まずそちらを優先。</div>
+      </div>
+    </li>
+    <li>
+      <div class="step-content">
+        <div class="step-title">英文解釈で構造を読む力を鍛える</div>
+        <div class="step-desc">英文解釈の技術100→ポレポレの順。文の骨格を見抜く力が、長文速読の土台になる。</div>
+      </div>
+    </li>
+    <li>
+      <div class="step-content">
+        <div class="step-title">長文で語彙と読解を積み上げる</div>
+        <div class="step-desc">知らない単語は、難しくても全部辞書で引く。意味は一つでなく全部ノートにまとめる。単語帳だけでは抑えきれない「語の本当のニュアンス」がここで身につく。</div>
+      </div>
+    </li>
+  </ul>
+
+  <div class="callout">
+    <div class="callout-icon">ORDER</div>
+    <div class="callout-body">
+      <strong>単語・文法 → 英文解釈 → 長文</strong><br>
+      この順番は絶対に守ること。基礎なき長文は、読んでいるようで読めていない。
+    </div>
+  </div>
+</section>
+
+<div class="divider"><div class="div-line"></div><div class="div-dot"></div><div class="div-line"></div></div>
+
+<!-- ══ CHAPTER 6: BOOKS ══ -->
+<section class="chapter" id="books">
+  <div class="chapter-num">CHAPTER 06 — 参考書リスト</div>
+  <h2 class="chapter-title">武器を<em>選ぶ</em>。</h2>
+
+  <p class="body-text">
+    参考書は目的に合わせて選ぶ道具だ。「有名だから」「難しそうだから」ではなく、今の自分の課題意識に合ったものを選ぶ。過去問は解けるようになったら早めに始めていい。最新年度を残す必要はない——<strong>解いた過去問を何周も繰り返して完全に解けるようにする</strong>ことの方が重要だ。
+  </p>
+
+  <div class="book-section">
+    <div class="book-subject-title">📐 数学 — MATHEMATICS</div>
+    <div class="book-group">
+      <div class="book-level">初学 → 基礎解法</div>
+      <div class="book-items">
+        <span class="book-chip">チャート</span>
+      </div>
+    </div>
+    <div class="book-group">
+      <div class="book-level">思考力養成</div>
+      <div class="book-items">
+        <span class="book-chip">プラチカ</span>
+        <span class="book-chip">上級問題精講</span>
+      </div>
+    </div>
+    <div class="book-group">
+      <div class="book-level">思考力＋ / 極める</div>
+      <div class="book-items">
+        <span class="book-chip">世界一わかりやすい京大の理系数学</span>
+        <span class="book-chip">入試数学の掌握</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="book-section">
+    <div class="book-subject-title">⚗️ 化学 — CHEMISTRY</div>
+    <div class="book-group">
+      <div class="book-level">初学</div>
+      <div class="book-items">
+        <span class="book-chip">セミナー</span>
+        <span class="book-chip">鎌田のDOシリーズ</span>
+      </div>
+    </div>
+    <div class="book-group">
+      <div class="book-level">基礎解法</div>
+      <div class="book-items">
+        <span class="book-chip">スタンダード230</span>
+      </div>
+    </div>
+    <div class="book-group">
+      <div class="book-level">思考 / 極める</div>
+      <div class="book-items">
+        <span class="book-chip">化学の新演習</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="book-section">
+    <div class="book-subject-title">⚡ 物理 — PHYSICS</div>
+    <div class="book-group">
+      <div class="book-level">初学</div>
+      <div class="book-items">
+        <span class="book-chip">漆原シリーズ</span>
+        <span class="book-chip">セミナー</span>
+      </div>
+    </div>
+    <div class="book-group">
+      <div class="book-level">基礎解法</div>
+      <div class="book-items">
+        <span class="book-chip">良問の風</span>
+      </div>
+    </div>
+    <div class="book-group">
+      <div class="book-level">思考 / 思考＋</div>
+      <div class="book-items">
+        <span class="book-chip">名門の森</span>
+        <span class="book-chip">難問題の傾向とその対策</span>
+      </div>
+    </div>
+    <div class="book-group">
+      <div class="book-level">極める (理3レベル)</div>
+      <div class="book-items">
+        <span class="book-chip">道標</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="book-section">
+    <div class="book-subject-title">🔤 英語 — ENGLISH</div>
+    <div class="book-group">
+      <div class="book-level">単語</div>
+      <div class="book-items">
+        <span class="book-chip">鉄壁</span>
+        <span class="book-chip">速単</span>
+      </div>
+    </div>
+    <div class="book-group">
+      <div class="book-level">文法・構文</div>
+      <div class="book-items">
+        <span class="book-chip">リンケージ100</span>
+      </div>
+    </div>
+    <div class="book-group">
+      <div class="book-level">英文解釈</div>
+      <div class="book-items">
+        <span class="book-chip">英文解釈の技術100</span>
+        <span class="book-chip">ポレポレ</span>
+      </div>
+    </div>
+    <div class="book-group">
+      <div class="book-level">英文解釈＋ / 極める</div>
+      <div class="book-items">
+        <span class="book-chip">京大の英語難構文</span>
+      </div>
+    </div>
+    <div class="book-group">
+      <div class="book-level">長文</div>
+      <div class="book-items">
+        <span class="book-chip">やっておきたいシリーズ</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ ENDING ══ -->
+<section class="ending">
+  <div class="ending-bg"></div>
+  <h2 class="ending-title">
+    あとは、やるだけだ。
+  </h2>
+  <p class="ending-sub">
+    正しい設計を知った今、言い訳はない。<br>
+    課題意識を持って、一冊ずつ潰していけ。<br>
+    それだけで、世界が変わる。
+  </p>
+  <div class="ending-sig">
+    小澤 清文
+    <small>東京科学大学 医学部医学科 1年 / 偏差値40 → 医学部合格</small>
+  </div>
+</section>
+
+<footer>
+  © 2024 小澤清文 勉強法 — All rights reserved. — 無断転載禁止
+</footer>
+
+<script>
+// Progress bar
+window.addEventListener('scroll', () => {
+  const scrolled = window.scrollY;
+  const total = document.body.scrollHeight - window.innerHeight;
+  document.getElementById('progress').style.width = (scrolled / total * 100) + '%';
+});
+
+// Intersection Observer
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) entry.target.classList.add('visible');
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.chapter').forEach(el => io.observe(el));
+
+// Steps stagger
+const stepIo = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.querySelectorAll('.steps li').forEach((li, i) => {
+        setTimeout(() => li.classList.add('visible'), i * 120);
+      });
+    }
+  });
+}, { threshold: 0.2 });
+
+document.querySelectorAll('.chapter').forEach(el => stepIo.observe(el));
+</script>
+</body>
+</html>
